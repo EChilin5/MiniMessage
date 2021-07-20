@@ -1,4 +1,5 @@
-import { Component,  OnInit } from "@angular/core";
+import { Component,  OnDestroy,  OnInit } from "@angular/core";
+import { Subscription } from "rxjs";
 import {Post} from '../post.model';
 import { PostsService } from "../posts.service";
 
@@ -11,7 +12,7 @@ import { PostsService } from "../posts.service";
 //  class PostListComponent implements is a contract in the class
 //
 
-export class PostListComponent implements OnInit{
+export class PostListComponent implements OnInit, OnDestroy{
   // posts = [
   //   {title:'First post', content:"This is the first post"},
   //   {title:'Second post', content:"This is the second post"},
@@ -19,7 +20,7 @@ export class PostListComponent implements OnInit{
 
   // ];
   posts:Post[]=[];
-
+  private postSub:Subscription;
 
   constructor( public postsService:PostsService){
 
@@ -28,5 +29,16 @@ export class PostListComponent implements OnInit{
   //will be automticall launched by angular
   ngOnInit(){
     this.posts = this.postsService.getPosts();
+    //listener to the object
+
+    this.postsService.getPostUpdateListener()
+    .subscribe( (posts:Post[])=>{
+        this.posts = posts;
+    });
+  }
+
+  ngOnDestroy(){
+    //THIS will prevent memory leaks from occuring
+    this.postSub.unsubscribe();
   }
 }
