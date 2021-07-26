@@ -1,3 +1,11 @@
 <mat-toolbar color="primary">
-  <span>Mini Message</span>
+  <span><a routerLink="/">Mini Message</a></span>
+  <span class="spacer"></span>
+  <ul>
+    <li>
+      <!-- routerLinkActive assign a new class when the spcific link is active
+        changes the color of the element-->
+      <a mat-button routerLink="/create" routerLinkActive="mat-accent">New Post</a>
+    </li>
+  </ul>
 </mat-toolbar>
