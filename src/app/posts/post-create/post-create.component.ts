@@ -1,6 +1,7 @@
 import { Component, OnInit, } from "@angular/core";
 import { NgForm } from "@angular/forms";
 import { ActivatedRoute, ParamMap } from "@angular/router";
+import { Post } from "../post.model";
 
 import { PostsService } from "../posts.service";
 
@@ -14,6 +15,7 @@ export class PostCreateComponent implements OnInit{
   enteredTitle = '';
   private mode = 'create';
   private postId: string;
+  private post: Post;
 
 
   // Post service is injected into this component
@@ -25,6 +27,7 @@ export class PostCreateComponent implements OnInit{
         if(paramMap.has('postId')){
             this.mode = 'edit';
             this.postId = paramMap.get('postId');
+            this.post = this.postsService.getPost(this.postId);
         }else{
           this.mode = 'create';
           this.postId = null;
