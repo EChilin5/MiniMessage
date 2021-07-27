@@ -7,7 +7,7 @@ const app = express();
 
 // this is currently depecrated will need to update this portion with
 // latest way to update connection to  mongoose
-mongoose.connect("mongodb+srv://edgar:<password>@cluster0.iieuk.mongodb.net/node-angular?retryWrites=true&w=majority")
+mongoose.connect("mongodb+srv://edgar:<Password>@cluster0.iieuk.mongodb.net/node-angular?retryWrites=true&w=majority",{ useNewUrlParser: true , useUnifiedTopology: true } )
   .then(()=>{
     console.log("Connected to database");
   })
@@ -25,10 +25,23 @@ app.use( (req, res, next) => {
   // the header provided
   res.setHeader('Access-Control-Allow-Origin',"*");
   res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS");
   next();
 });
 
+//use patch to update an existing resource
+// use put re
+app.put("/api/post/:id", (req, res, next)=>{
+  const post = new Post({
+    _id: req.body.id,
+    title:req.body.title,
+    content:req.body.content
+  });
+  Post.updateOne({_id: req.params.id}, post).then(result=>{
+    console.log(result);
+    res.status(200).json({message: "Update succesful"});
+  });
+});
 
 app.post("/api/posts", (req, res, next)=>{
   const post = new Post({

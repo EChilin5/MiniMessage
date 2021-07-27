@@ -15,7 +15,7 @@ export class PostCreateComponent implements OnInit{
   enteredTitle = '';
   private mode = 'create';
   private postId: string;
-  private post: Post;
+  post: Post;
 
 
   // Post service is injected into this component
@@ -35,12 +35,19 @@ export class PostCreateComponent implements OnInit{
     });
   }
 
-  onAddPost(form: NgForm){
+  onSavePost(form: NgForm){
 
     if(form.invalid){
       return;
     }
-    this.postsService.addPost( form.value.title, form.value.content);
+    console.log(this.mode);
+    if(this.mode === 'create'){
+      this.postsService.addPost( form.value.title, form.value.content);
+    }else{
+      this.postsService.updatePost(this.postId,form.value.title, form.value.content)
+    }
+
     form.resetForm();
+
   }
 }
