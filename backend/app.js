@@ -31,7 +31,7 @@ app.use( (req, res, next) => {
 
 //use patch to update an existing resource
 // use put re
-app.put("/api/post/:id", (req, res, next)=>{
+app.put("/api/posts/:id", (req, res, next)=>{
   const post = new Post({
     _id: req.body.id,
     title:req.body.title,
