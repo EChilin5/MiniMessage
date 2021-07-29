@@ -5,13 +5,14 @@ import {map} from 'rxjs/operators';
 // rxjs are obejcts that help pass data around
 import {HttpClient} from '@angular/common/http';
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+import { Router } from '@angular/router';
 
 @Injectable({providedIn:'root'})
 export class PostsService{
   private posts: Post[] = [];
   private postUpdated = new Subject<Post[]>();
 
-  constructor(private http: HttpClient){}
+  constructor(private http: HttpClient, private router: Router ){}
 
   getPosts(){
     // create a new array with the old object
@@ -47,7 +48,7 @@ export class PostsService{
 
     // this will just find the specific id post
     // that will be added to a new js object
-    return {...this.posts.find(p => p.id === id)};
+    return this.http.get<{_id:string, title:string, content:string}>("http://localhost:3000/api/posts/"+id);
   }
 
   addPost(title:string, content:string){
@@ -63,6 +64,7 @@ export class PostsService{
       this.posts.push(post);
       //emiting
       this.postUpdated.next([...this.posts]);
+      this.router.navigate(["/"]);
     });
 
    }
@@ -71,7 +73,14 @@ export class PostsService{
      const post : Post = {id:id, title:title, content:content};
      console.log(title + " " + content);
       this.http.put("http://localhost:3000/api/posts/"+id, post)
-      .subscribe(response => console.log(response));
+      .subscribe(response => {
+        const updatedPost = [...this.posts];
+        const oldPostIndex = updatedPost.findIndex(p=>p.id === post.id);
+        updatedPost[oldPostIndex] = post;
+        this.posts = updatedPost;
+        this.postUpdated.next([...this.posts]);
+        this.router.navigate(["/"]);
+      });
    }
 
    deletePost(postId:string){
