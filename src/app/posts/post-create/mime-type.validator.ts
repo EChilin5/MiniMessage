@@ -1,11 +1,14 @@
 import { AbstractControl } from "@angular/forms";
 // import { truncateSync } from "fs";
-import { Observable, Observer } from "rxjs";
+import { Observable, Observer, of } from "rxjs";
 
 //asynchronos validator
 // this will take in the key that is not specific reather generic
 export const  mimeType= (control:AbstractControl ):
  Promise<{[key:string] :any}> | Observable<{[key:string] :any}> => {
+   if(typeof(control.value) === 'string'){
+     return of(null);
+   }
   const file = control.value as File;
   const fileReader = new FileReader;
   //observer is a tool that is used to knwo when new data is emmited

@@ -27,39 +27,49 @@ const storage = multer.diskStorage({
   }
 });
 
-//use patch to update an existing resource
-// use put re
-router.put("/:id", (req, res, next)=>{
-  const url = req.protocol + '://'+req.get("host");
-  const post = new Post({
-    _id: req.body.id,
-    title:req.body.title,
-    content:req.body.content,
-  });
-  Post.updateOne({_id: req.params.id}, post).then(result=>{
-    console.log(result);
-    res.status(200).json({message: "Update succesful"});
-  });
-});
-
 router.post("", multer({storage:storage}).single("image"),(req, res, next)=>{
+  const url = req.protocol + '://'+req.get("host");
   const post = new Post({
     title: req.body.title,
     content: req.body.content,
-    imagePath:url+"/images/" + req.file.filename
+    imagePath: url+"/images/" + req.file.filename
   })
   // add then in order to get the id back from the created post
   post.save().then(createdPost =>{
     res.status(201).json({
         message:'Post added successfully',
-
-          ...createdPost,
+        ...createdPost,
           id: createdPost._id
 
       });
   });
 
 });
+
+//use patch to update an existing resource
+// use put re
+router.put("/:id", multer({storage:storage}).single("image"), (req, res, next)=>{
+  console.log(req.file);
+  let imagePath = req.body.imagePath;
+  if(req.file){
+    const url = req.protocol + "://" + req.get("host");
+    imagePath = url+"/images/" + req.file.filename
+  }
+
+  const post = new Post({
+    _id: req.body.id,
+    title:req.body.title,
+    content:req.body.content,
+    imagePath: imagePath
+  });
+  console.log(post);
+  Post.updateOne({_id: req.params.id}, post).then(result=>{
+    console.log(result);
+    res.status(200).json({message: "Update succesful"});
+  });
+});
+
+
 
 router.get("",(req, res, next)=>{
   Post.find()

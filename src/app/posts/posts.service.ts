@@ -49,7 +49,7 @@ export class PostsService{
 
     // this will just find the specific id post
     // that will be added to a new js object
-    return this.http.get<{_id:string, title:string, content:string}>("http://localhost:3000/api/posts/"+id);
+    return this.http.get<{_id:string, title:string, content:string, imagePath:string}>("http://localhost:3000/api/posts/"+id);
   }
 
   addPost(title:string, content:string, image:File){
@@ -82,13 +82,28 @@ export class PostsService{
 
    }
 
-   updatePost(id:string, title:string, content:string){
-     const post : Post = {id:id, title:title, content:content, imagePath: null};
+   updatePost(id:string, title:string, content:string, image:File|string){
+    let postData: Post| FormData;
+    if(typeof(image) === 'object'){
+       postData = new FormData();
+       postData.append("id", id);
+      postData.append("title", title);
+      postData.append("content", content);
+      postData.append("image", image, title);
+     }else{
+         postData = {id: id, title: title, content:content, imagePath:image};
+     }
      console.log(title + " " + content);
-      this.http.put("http://localhost:3000/api/posts/"+id, post)
+      this.http.put("http://localhost:3000/api/posts/"+id, postData)
       .subscribe(response => {
         const updatedPost = [...this.posts];
-        const oldPostIndex = updatedPost.findIndex(p=>p.id === post.id);
+        const oldPostIndex = updatedPost.findIndex(p=>p.id === id);
+        const post:Post={
+          id: id,
+          title: title,
+           content:content,
+           imagePath: "response.imagePath"
+        }
         updatedPost[oldPostIndex] = post;
         this.posts = updatedPost;
         this.postUpdated.next([...this.posts]);
